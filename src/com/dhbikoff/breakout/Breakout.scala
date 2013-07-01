@@ -7,8 +7,11 @@ import android.view.Window
 import android.view.WindowManager
 
 class Breakout extends Activity {
-  var gameView: GameView = null
-
+  lazy val intent = getIntent
+  lazy val newGame = intent getIntExtra ("NEW_GAME", 1)
+  lazy val sound = intent getBooleanExtra ("SOUND_ON_OFF", true)
+  lazy val gameView = new GameView(this, newGame, sound)
+  
   override def onCreate(savedInstanceState: Bundle) = {
     super.onCreate(savedInstanceState)
     setVolumeControlStream(AudioManager.STREAM_MUSIC)
@@ -18,22 +21,17 @@ class Breakout extends Activity {
     getWindow.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
       WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
-    val intent = getIntent
-    val newGame = intent.getIntExtra("NEW_GAME", 1)
-    val sound = intent.getBooleanExtra("SOUND_ON_OFF", true)
-    gameView = new GameView(this, newGame, sound)
-
     // init graphics and game Thread
     setContentView(gameView)
   }
 
   override def onPause = {
     super.onPause
-    gameView.pause
+    gameView pause
   }
 
   override def onResume = {
     super.onResume
-    gameView.resume
+    gameView resume
   }
 }

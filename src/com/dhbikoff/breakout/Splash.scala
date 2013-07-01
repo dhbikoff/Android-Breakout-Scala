@@ -69,6 +69,15 @@ class Splash extends Activity {
     startActivity(intent)
   }
 
+  def contGame(view: View) {
+    newGameVal = 0
+    val intent = new Intent(this, classOf[Breakout]);
+    intent.putExtra(NewGame, newGameVal);
+    intent.putExtra(SoundOnOff, sound);
+    startActivity(intent);
+  }
+
+  
   override def onResume = {
     super.onResume
     val soundSettings = getSharedPreferences(SoundPrefs, 0)
