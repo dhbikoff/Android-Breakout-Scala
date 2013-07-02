@@ -32,7 +32,7 @@ class Splash extends Activity {
 
   private def currentScore = {
     val scoreSettings = getSharedPreferences(HighScorePref, 0)
-	scoreSettings.getInt("highScore", 0)
+    scoreSettings.getInt("highScore", 0)
   }
   
   private def highScore: Int = {
@@ -46,7 +46,8 @@ class Splash extends Activity {
       case e: FileNotFoundException => e.printStackTrace
       case e: StreamCorruptedException => e.printStackTrace
       case e: IOException => e.printStackTrace
-	}
+    }
+
     if (oldScore > currentScore) oldScore 
     else currentScore
   }
@@ -70,7 +71,7 @@ class Splash extends Activity {
 
   private def savedSound: Boolean = {
     val soundSettings = getSharedPreferences(SoundPrefs, 0)
-	soundSettings.getBoolean("soundOn", true)
+    soundSettings.getBoolean("soundOn", true)
   }
   
   private def currentSound: Boolean = {
@@ -83,9 +84,9 @@ class Splash extends Activity {
     
   override protected def onResume: Unit = {
     super.onResume
-	val soundButton = (findViewById(R.id.soundToggleButton)).asInstanceOf[ToggleButton]
-	soundButton.setChecked(savedSound)
-	showHighScore()
+    val soundButton = (findViewById(R.id.soundToggleButton)).asInstanceOf[ToggleButton]
+    soundButton.setChecked(savedSound)
+    showHighScore()
   }
   
   def showSource(v: View): Unit = {
