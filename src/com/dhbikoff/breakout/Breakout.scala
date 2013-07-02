@@ -12,7 +12,7 @@ class Breakout extends Activity {
   private lazy val sound = intent getBooleanExtra ("SOUND_ON_OFF", true)
   private lazy val gameView = new GameView(this, newGame, sound)
   
-  override def onCreate(savedInstanceState: Bundle) = {
+  override protected def onCreate(savedInstanceState: Bundle) = {
     super.onCreate(savedInstanceState)
     setVolumeControlStream(AudioManager.STREAM_MUSIC)
 

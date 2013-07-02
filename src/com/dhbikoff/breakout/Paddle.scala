@@ -7,61 +7,62 @@ import android.graphics.drawable.shapes.RectShape
 import android.util.Log
 
 class Paddle extends ShapeDrawable(new RectShape) {
-  this.getPaint.setColor(Color.WHITE)
 
-  var ScreenWidth = 0
-  var ScreenHeight = 0
-  var PaddleWidth = 0
-  var PaddleHeight = 0
-  var PaddleOffset = 0
-  var PaddleMoveOffset = 0
+  var screenWidth = 0
+  var screenHeight = 0
+  var paddleWidth = 0
+  var paddleHeight = 0
+  var paddleOffset = 0
+  var paddleMoveOffset = 0
 
   var left = 0
   var right = 0
   var top = 0
   var bottom = 0
+  
+  this.getPaint.setColor(Color.WHITE)
 
-  def drawPaddle(canvas: Canvas) = {
+  def drawPaddle(canvas: Canvas): Unit = {
     this.setBounds(left, top, right, bottom)
     this.draw(canvas)
   }
 
-  def initCoords(width: Int, height: Int) {
-    ScreenHeight = height
-    ScreenWidth = width
-    PaddleMoveOffset = ScreenWidth / 15
+  def initCoords(width: Int, height: Int): Unit = {
+    screenHeight = height
+    screenWidth = width
+    paddleMoveOffset = screenWidth / 15
 
-    PaddleWidth = ScreenWidth / 10
-    PaddleHeight = ScreenWidth / 72
-    PaddleOffset = ScreenHeight / 6
+    paddleWidth = screenWidth / 10
+    paddleHeight = screenWidth / 72
+    paddleOffset = screenHeight / 6
 
-    left = (ScreenWidth / 2) - PaddleWidth
-    right = (ScreenWidth / 2) + PaddleWidth
-    top = (ScreenHeight - PaddleOffset) - PaddleHeight
-    bottom = (ScreenHeight - PaddleOffset) + PaddleHeight
+    left = (screenWidth / 2) - paddleWidth
+    right = (screenWidth / 2) + paddleWidth
+    top = (screenHeight - paddleOffset) - paddleHeight
+    bottom = (screenHeight - paddleOffset) + paddleHeight
 
   }
 
   def movePaddle(x: Int): Unit = {
     if (x >= left && x <= right) {
-      left = x - PaddleWidth
-      right = x + PaddleWidth
+      left = x - paddleWidth
+      right = x + paddleWidth
     } else if (x > right) {
-      left += PaddleMoveOffset
-      right += PaddleMoveOffset
+      left += paddleMoveOffset
+      right += paddleMoveOffset
     } else if (x < left) {
-      left -= PaddleMoveOffset
-      right -= PaddleMoveOffset
+      left -= paddleMoveOffset
+      right -= paddleMoveOffset
     }
 
     if (left < 0) {
       left = 0
-      right = PaddleWidth * 2
+      right = paddleWidth * 2
     }
 
-    if (right > ScreenWidth) {
-      right = ScreenWidth
-      left = ScreenWidth - (PaddleWidth * 2)
+    if (right > screenWidth) {
+      right = screenWidth
+      left = screenWidth - (paddleWidth * 2)
     }
   }
 }
