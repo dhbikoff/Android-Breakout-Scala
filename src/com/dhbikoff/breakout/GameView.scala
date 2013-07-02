@@ -18,7 +18,7 @@ import android.view.MotionEvent
 import android.view.SurfaceView
 
 class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends SurfaceView(context) with Runnable {
-  val ball = new Ball(this.getContext, soundToggle)
+  val ball = new Ball(context, sound)
   val paddle = new Paddle
   val blocksList = new ArrayList[Block]
   val holder = getHolder
@@ -32,7 +32,6 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
  
   
   var startNewGame = newGameFlag // new game or continue
-  var soundToggle = sound
   var showGameOverBanner = false
   var levelCompleted = 0
   var touched = false
