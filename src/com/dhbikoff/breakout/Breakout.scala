@@ -20,18 +20,17 @@ class Breakout extends Activity {
     requestWindowFeature(Window.FEATURE_NO_TITLE)
     getWindow.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
       WindowManager.LayoutParams.FLAG_FULLSCREEN)
-
-    // init graphics and game Thread
+      
     setContentView(gameView)
   }
 
   override def onPause = {
-    super.onPause
-    gameView pause
+    super.onPause()
+    gameView.pause()
   }
 
   override def onResume = {
-    super.onResume
-    gameView resume
+    super.onResume()
+    gameView.resume()
   }
 }

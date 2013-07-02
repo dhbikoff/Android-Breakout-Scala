@@ -238,7 +238,7 @@ class GameView(context: Context, launchNewGame: Int, sound: Boolean) extends Sur
     }
   }
 
-  def pause {
+  def pause() = {
     saveGameData
     running = false
     try {
@@ -250,7 +250,7 @@ class GameView(context: Context, launchNewGame: Int, sound: Boolean) extends Sur
     ball.close
   }
 
-  def resume {
+  def resume() = {
     running = true
     gameThread = new Thread(this)
     gameThread start
