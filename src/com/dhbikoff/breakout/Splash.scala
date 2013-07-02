@@ -89,13 +89,6 @@ class Splash extends Activity {
   def soundToggle(v: View): Boolean =
     v.asInstanceOf[ToggleButton] isChecked
 
-  override protected def onResume: Unit = {
-    super.onResume
-    val soundButton = (findViewById(R.id.soundToggleButton)).asInstanceOf[ToggleButton]
-    soundButton.setChecked(savedSound)
-    showHighScore()
-  }
-
   def showSource(v: View): Unit = {
     val link = new Intent
     link.setAction(Intent.ACTION_VIEW)
@@ -104,6 +97,13 @@ class Splash extends Activity {
     startActivity(link)
   }
 
+  override protected def onResume: Unit = {
+    super.onResume
+    val soundButton = (findViewById(R.id.soundToggleButton)).asInstanceOf[ToggleButton]
+    soundButton.setChecked(savedSound)
+    showHighScore()
+  }
+  
   override protected def onPause: Unit = {
     super.onPause
     val soundSettings = getSharedPreferences(SoundPrefs, 0)

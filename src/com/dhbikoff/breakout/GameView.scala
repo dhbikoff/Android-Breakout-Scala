@@ -19,25 +19,11 @@ import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 
-class GameView(context: Context, launchNewGame: Int, sound: Boolean) extends SurfaceView(context) with Runnable {
-  var startNewGame = launchNewGame // new game or continue
-  var soundToggle = sound
-  var holder = getHolder
-  var ball = new Ball(this.getContext, soundToggle)
-  var paddle = new Paddle
-  var blocksList = new ArrayList[Block]
-  var showGameOverBanner = false
-  var levelCompleted = 0
-  var touched = false
-  var eventX = 0.0
-  var running = false
-  var canvas: Canvas = null
-  var checkSize = true
-  var newGame = true
-  var waitCount = 0
-  var points = 0
-  var gameThread = new Thread(this)
-
+class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends SurfaceView(context) with Runnable {
+  val ball = new Ball(this.getContext, soundToggle)
+  val paddle = new Paddle
+  val blocksList = new ArrayList[Block]
+  val holder = getHolder
   val score = "SCORE = "
   val PlayerTurnsNum = 3
   val GetReady = "GET READY..."
@@ -45,18 +31,32 @@ class GameView(context: Context, launchNewGame: Int, sound: Boolean) extends Sur
   val FilePath = "data/data/com.dhbikoff.breakout/data.dat"
   val FrameRate = 33
   val StartTimer = 66
+ 
   
+  var startNewGame = newGameFlag // new game or continue
+  var soundToggle = sound
+  var showGameOverBanner = false
+  var levelCompleted = 0
+  var touched = false
+  var eventX = 0.0
+  var running = false
+  var checkSize = true
+  var newGame = true
+  var waitCount = 0
+  var points = 0
+  
+  var gameThread = new Thread(this)
+  var canvas = new Canvas
   var playerTurns = PlayerTurnsNum  
   var scorePaint = new Paint
+  var turnsPaint = new Paint
+  var getReadyPaint = new Paint
+  
   scorePaint.setColor(Color.WHITE)
   scorePaint.setTextSize(25)
-
-  var turnsPaint = new Paint
   turnsPaint.setTextAlign(Paint.Align.RIGHT)
   turnsPaint.setColor(Color.WHITE)
   turnsPaint.setTextSize(25)
-
-  var getReadyPaint = new Paint
   getReadyPaint.setTextAlign(Paint.Align.CENTER)
   getReadyPaint.setColor(Color.WHITE)
   getReadyPaint.setTextSize(45)
