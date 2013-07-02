@@ -115,4 +115,5 @@ class Splash extends Activity {
     soundEditor.commit()
     scoreEditor.commit()
   }
+  
 }

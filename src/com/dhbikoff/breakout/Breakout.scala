@@ -33,4 +33,5 @@ class Breakout extends Activity {
     super.onResume()
     gameView.resume()
   }
+  
 }

@@ -4,7 +4,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RectShape
-import android.util.Log
 
 class Paddle extends ShapeDrawable(new RectShape) {
 

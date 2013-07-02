@@ -19,4 +19,5 @@ class Block(rect: Rect, colorNum: Int) extends ShapeDrawable(new RectShape) {
 
   def toIntArray: Array[Int] = Array(getBounds.left, getBounds.top, 
       getBounds.right, getBounds.bottom, blockColor)
+      
 }

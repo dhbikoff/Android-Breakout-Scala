@@ -2,6 +2,7 @@ package com.dhbikoff.breakout
 
 import java.util.ArrayList
 import java.util.Random
+
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -10,7 +11,6 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.media.AudioManager
 import android.media.SoundPool
-import android.util.Log
 
 class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape) {
   this.getPaint.setColor(Color.CYAN)
