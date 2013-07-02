@@ -160,7 +160,7 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
     for (i <- (blockListLength - 1) to 0 by -1) {
       var localCollision = false
       var blockRect = blocks.get(i).getBounds
-      color = blocks.get(i).getColor
+      color = blocks.get(i).color
 
       if (ballLeft >= blockRect.left - (radius * 2)
         && ballLeft <= blockRect.right + (radius * 2)

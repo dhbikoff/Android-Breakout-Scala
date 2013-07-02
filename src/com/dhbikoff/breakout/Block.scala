@@ -6,15 +6,17 @@ import android.graphics.Rect
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RectShape
 
-class Block(rect: Rect, color: Int) extends ShapeDrawable(new RectShape) {
+class Block(rect: Rect, colorNum: Int) extends ShapeDrawable(new RectShape) {
+  private val paint: Paint = new Paint
+  private val blockColor = colorNum
   setBounds(rect)
-  val paint: Paint = new Paint
-  paint.setColor(color)
-  val blockColor = color
+  paint.setColor(colorNum)
+  
+  def drawBlock(canvas: Canvas): Unit = 
+    canvas.drawRect(getBounds, paint)
 
-  def drawBlock(canvas: Canvas) = canvas.drawRect(getBounds, paint)
+  def color: Int = paint.getColor
 
-  def getColor = paint.getColor
-
-  def toIntArray = Array(getBounds.left, getBounds.top, getBounds.right, getBounds.bottom, blockColor)
+  def toIntArray: Array[Int] = Array(getBounds.left, getBounds.top, 
+      getBounds.right, getBounds.bottom, blockColor)
 }

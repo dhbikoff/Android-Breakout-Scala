@@ -7,10 +7,10 @@ import android.view.Window
 import android.view.WindowManager
 
 class Breakout extends Activity {
-  lazy val intent = getIntent
-  lazy val newGame = intent getIntExtra ("NEW_GAME", 1)
-  lazy val sound = intent getBooleanExtra ("SOUND_ON_OFF", true)
-  lazy val gameView = new GameView(this, newGame, sound)
+  private lazy val intent = getIntent
+  private lazy val newGame = intent getIntExtra ("NEW_GAME", 1)
+  private lazy val sound = intent getBooleanExtra ("SOUND_ON_OFF", true)
+  private lazy val gameView = new GameView(this, newGame, sound)
   
   override def onCreate(savedInstanceState: Bundle) = {
     super.onCreate(savedInstanceState)
@@ -24,12 +24,12 @@ class Breakout extends Activity {
     setContentView(gameView)
   }
 
-  override def onPause = {
+  override protected def onPause = {
     super.onPause()
     gameView.pause()
   }
 
-  override def onResume = {
+  override protected def onResume = {
     super.onResume()
     gameView.resume()
   }
