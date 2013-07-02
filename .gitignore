@@ -8,3 +8,4 @@ project.properties
 .classpath
 lint.xml
 .settings
+.project
