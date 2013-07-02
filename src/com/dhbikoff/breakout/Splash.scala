@@ -23,7 +23,7 @@ class Splash extends Activity {
   private val SoundPrefs = "SOUND_PREFS"
   private val ScoreStr = "High Score = "
   private lazy val intent = new Intent(this, classOf[Breakout])
-  
+
   override protected def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
     setVolumeControlStream(AudioManager.STREAM_MUSIC)
@@ -34,22 +34,29 @@ class Splash extends Activity {
     val scoreSettings = getSharedPreferences(HighScorePref, 0)
     scoreSettings.getInt("highScore", 0)
   }
-  
-  private def highScore: Int = {
-    var oldScore = 0
-    try {
-      val fis = new FileInputStream(FilePath)
-      val ois = new ObjectInputStream(fis)
-      oldScore = ois.readInt
-      fis.close
-    } catch {
-      case e: FileNotFoundException => e.printStackTrace
-      case e: StreamCorruptedException => e.printStackTrace
-      case e: IOException => e.printStackTrace
-    }
 
-    if (oldScore > currentScore) oldScore 
-    else currentScore
+  private def highScore: Int = {
+    val oldScore: Option[Int] = {
+      try {
+        val fis = new FileInputStream(FilePath)
+        val ois = new ObjectInputStream(fis)
+        val score = ois.readInt
+        fis.close
+        Some(score)
+      } catch {
+        case e: FileNotFoundException => e.printStackTrace; None
+        case e: StreamCorruptedException => e.printStackTrace; None
+        case e: IOException => e.printStackTrace; None
+      }
+    }
+    
+    oldScore match {
+      case Some(oldScore) => {
+        if (oldScore > currentScore) oldScore
+    	else currentScore
+      }
+      case None => currentScore
+    }
   }
 
   private def showHighScore() = {
@@ -57,7 +64,7 @@ class Splash extends Activity {
     highScoreView.setText(ScoreStr + highScore)
   }
 
-  def newGame(view: View): Unit = {  
+  def newGame(view: View): Unit = {
     intent.putExtra(NewGame, 1)
     intent.putExtra(SoundOnOff, currentSound)
     startActivity(intent)
@@ -73,22 +80,22 @@ class Splash extends Activity {
     val soundSettings = getSharedPreferences(SoundPrefs, 0)
     soundSettings.getBoolean("soundOn", true)
   }
-  
+
   private def currentSound: Boolean = {
     val soundButton = (findViewById(R.id.soundToggleButton)).asInstanceOf[ToggleButton]
     soundToggle(soundButton)
   }
-  
-  def soundToggle(v: View): Boolean = 
+
+  def soundToggle(v: View): Boolean =
     v.asInstanceOf[ToggleButton] isChecked
-    
+
   override protected def onResume: Unit = {
     super.onResume
     val soundButton = (findViewById(R.id.soundToggleButton)).asInstanceOf[ToggleButton]
     soundButton.setChecked(savedSound)
     showHighScore()
   }
-  
+
   def showSource(v: View): Unit = {
     val link = new Intent
     link.setAction(Intent.ACTION_VIEW)
@@ -100,7 +107,7 @@ class Splash extends Activity {
   override protected def onPause: Unit = {
     super.onPause
     val soundSettings = getSharedPreferences(SoundPrefs, 0)
-    val highScoreSave = getSharedPreferences(HighScorePref,0)
+    val highScoreSave = getSharedPreferences(HighScorePref, 0)
     val soundEditor = soundSettings.edit()
     val scoreEditor = highScoreSave.edit()
     scoreEditor.putInt("highScore", highScore)
