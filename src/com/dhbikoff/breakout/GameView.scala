@@ -1,13 +1,15 @@
 package com.dhbikoff.breakout
 
+import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.io.StreamCorruptedException
-import java.util.ArrayList
+
 import scala.collection.mutable.ArrayBuffer
+
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -15,10 +17,6 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.view.MotionEvent
 import android.view.SurfaceView
-import scala.io.Source
-import scala.io.BufferedSource
-import scala.io.BufferedSource
-import java.io.FileInputStream
 
 class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends SurfaceView(context) with Runnable {
   val ball = new Ball(context, sound)
