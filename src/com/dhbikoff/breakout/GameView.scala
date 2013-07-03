@@ -1,6 +1,5 @@
 package com.dhbikoff.breakout
 
-import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
@@ -8,7 +7,7 @@ import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.io.StreamCorruptedException
 import java.util.ArrayList
-
+import scala.collection.mutable.ArrayBuffer
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -16,11 +15,15 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.view.MotionEvent
 import android.view.SurfaceView
+import scala.io.Source
+import scala.io.BufferedSource
+import scala.io.BufferedSource
+import java.io.FileInputStream
 
 class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends SurfaceView(context) with Runnable {
   val ball = new Ball(context, sound)
   val paddle = new Paddle
-  val blocksList = new ArrayList[Block]
+  val blocksList = new ArrayBuffer[Block]
   val holder = getHolder
   val score = "SCORE = "
   val PlayerTurnsNum = 3
@@ -29,8 +32,7 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
   val FilePath = "data/data/com.dhbikoff.breakout/data.dat"
   val FrameRate = 33
   val StartTimer = 66
- 
-  
+
   var startNewGame = newGameFlag // new game or continue
   var showGameOverBanner = false
   var levelCompleted = 0
@@ -41,14 +43,14 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
   var newGame = true
   var waitCount = 0
   var points = 0
-  
+
   var gameThread = new Thread(this)
   var canvas = new Canvas
-  var playerTurns = PlayerTurnsNum  
+  var playerTurns = PlayerTurnsNum
   var scorePaint = new Paint
   var turnsPaint = new Paint
   var getReadyPaint = new Paint
-  
+
   scorePaint.setColor(Color.WHITE)
   scorePaint.setTextSize(25)
   turnsPaint.setTextAlign(Paint.Align.RIGHT)
@@ -58,23 +60,24 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
   getReadyPaint.setColor(Color.WHITE)
   getReadyPaint.setTextSize(45)
 
-  def run {
+  def run(): Unit = {
     while (running) {
       try {
         Thread.sleep(FrameRate)
       } catch {
         case e: InterruptedException => e.printStackTrace
       }
-      
+
       if (holder.getSurface.isValid) {
         canvas = holder.lockCanvas
         canvas.drawColor(Color.BLACK)
-        
+
         if (blocksList.size == 0) {
           checkSize = true
           newGame = true
           levelCompleted += 1
         }
+
         if (checkSize) {
           initObjects(canvas)
           checkSize = false
@@ -83,6 +86,7 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
             playerTurns += 1
           }
         }
+
         if (touched) {
           paddle.movePaddle(eventX.asInstanceOf[Int])
         }
@@ -93,36 +97,36 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
         if (newGame) {
           waitCount = 0
           newGame = false
-        }        
+        }
+
         waitCount += 1
         engine(canvas, waitCount)
-        var printScore = score + points
-        canvas.drawText(printScore, 0, 25, scorePaint)
-        var turns = PlayerTurnsText + playerTurns
-        canvas.drawText(turns, canvas.getWidth, 25, turnsPaint)
-        holder.unlockCanvasAndPost(canvas) // release canvas
+        canvas.drawText(score + points, 0, 25, scorePaint)
+        canvas.drawText(PlayerTurnsText + playerTurns, canvas.getWidth, 25, turnsPaint)
+        holder.unlockCanvasAndPost(canvas)
       }
     }
   }
 
-  def drawToCanvas(canvas: Canvas) {
-    drawBlocks(canvas)
+  private def drawToCanvas(canvas: Canvas) {
+    blocksList foreach { x: Block => x.drawBlock(canvas) }
     paddle.drawPaddle(canvas)
     ball.drawBall(canvas)
   }
 
-  def engine(canvas: Canvas, waitCt: Int) {
+  private def engine(canvas: Canvas, waitCt: Int) {
     if (waitCount > StartTimer) {
       showGameOverBanner = false
       playerTurns -= ball.setVelocity
+
       if (playerTurns < 0) {
         showGameOverBanner = true
         gameOver(canvas)
       }
-      // paddle collision
+
       ball.checkPaddleCollision(paddle)
-      // block collision and points tally
       points += ball.checkBlocksCollision(blocksList)
+
     } else {
       if (showGameOverBanner) {
         getReadyPaint.setColor(Color.RED)
@@ -137,14 +141,14 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
     }
   }
 
-  def gameOver(canvas: Canvas) {
+  private def gameOver(canvas: Canvas) {
     levelCompleted = 0
     points = 0
     playerTurns = PlayerTurnsNum
-    blocksList.clear
+    blocksList.clear()
   }
 
-  def initObjects(canvas: Canvas) {
+  private def initObjects(canvas: Canvas) {
     touched = false // reset paddle location
     ball.initCoords(canvas.getWidth, canvas.getHeight)
     paddle.initCoords(canvas.getWidth, canvas.getHeight)
@@ -155,31 +159,29 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
     }
   }
 
-  def restoreBlocks(arr: ArrayList[Array[Int]]) {
-    for (i <- 0 until arr.size) {
-      var r = new Rect()
-      var blockNums: Array[Int] = arr.get(i)
-      r.set(blockNums(0), blockNums(1), blockNums(2), blockNums(3))
-      var b = new Block(r, blockNums(4))
-      blocksList.add(b)
+  private def restoreBlocks(arr: ArrayBuffer[Array[Int]]) {
+    arr foreach { blockArr: Array[Int] =>
+      val rect = new Rect(blockArr(0), blockArr(1), blockArr(2), blockArr(3))
+      val block = new Block(rect, blockArr(4))
+      blocksList.append(block)
     }
   }
 
-  def restoreGameData {
+  private def restoreGameData {
     try {
       val fis = new FileInputStream(FilePath)
       val ois = new ObjectInputStream(fis)
-      points = ois.readInt // restore player points
-      playerTurns = ois.readInt // restore player turns
-      val arr = (ois.readObject).asInstanceOf[ArrayList[Array[Int]]]
-      restoreBlocks(arr) // restore blocks
+      points = ois.readInt()
+      playerTurns = ois.readInt()
+      val arr = (ois.readObject).asInstanceOf[ArrayBuffer[Array[Int]]]
+      restoreBlocks(arr)
       ois.close()
       fis.close()
     } catch {
-      case e: FileNotFoundException => e.printStackTrace
-      case e: StreamCorruptedException => e.printStackTrace
-      case e: IOException => e.printStackTrace
-      case e: ClassNotFoundException => e.printStackTrace
+      case e: FileNotFoundException => e.printStackTrace()
+      case e: StreamCorruptedException => e.printStackTrace()
+      case e: IOException => e.printStackTrace()
+      case e: ClassNotFoundException => e.printStackTrace()
     }
     startNewGame = 1 // only restore once
   }
@@ -206,20 +208,15 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
           case _ => Color.LTGRAY
         }
         var block = new Block(r, color)
-        blocksList.add(block)
+        blocksList.append(block)
       }
     }
   }
 
-  def drawBlocks(canvas: Canvas) {
-    for (i <- 0 until blocksList.size)
-      blocksList.get(i).drawBlock(canvas)
-  }
-
   def saveGameData {
-    val arr = new ArrayList[Array[Int]]
+    val arr = new ArrayBuffer[Array[Int]]
     for (i <- 0 until blocksList.size) {
-      arr.add(blocksList.get(i).toIntArray)
+      arr.append(blocksList(i).toIntArray)
     }
     try {
       val fos = new FileOutputStream(FilePath)

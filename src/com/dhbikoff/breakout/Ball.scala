@@ -1,7 +1,8 @@
 package com.dhbikoff.breakout
 
-import java.util.ArrayList
 import java.util.Random
+
+import scala.collection.mutable.ArrayBuffer
 
 import android.content.Context
 import android.graphics.Canvas
@@ -145,7 +146,7 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
     return paddleCollision
   }
 
-  def checkBlocksCollision(blocks: ArrayList[Block]): Int = {
+  def checkBlocksCollision(blocks: ArrayBuffer[Block]): Int = {
     var points = 0
     var blockListLength = blocks.size
     ballRect = this.getBounds()
@@ -159,8 +160,8 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
     // check collision remove block if true
     for (i <- (blockListLength - 1) to 0 by -1) {
       var localCollision = false
-      var blockRect = blocks.get(i).getBounds
-      color = blocks.get(i).color
+      var blockRect = blocks(i).getBounds
+      color = blocks(i).color
 
       if (ballLeft >= blockRect.left - (radius * 2)
         && ballLeft <= blockRect.right + (radius * 2)

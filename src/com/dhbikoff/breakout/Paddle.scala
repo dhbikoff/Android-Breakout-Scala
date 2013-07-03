@@ -65,4 +65,3 @@ class Paddle extends ShapeDrawable(new RectShape) {
     }
   }
 }
-
