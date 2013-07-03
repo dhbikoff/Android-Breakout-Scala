@@ -1,5 +1,6 @@
 package com.dhbikoff.breakout
 
+import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -23,7 +24,8 @@ class Splash extends Activity {
   private val SoundPrefs = "SOUND_PREFS"
   private val ScoreStr = "High Score = "
   private lazy val intent = new Intent(this, classOf[Breakout])
-
+  private var saveFileExists = false
+  
   override protected def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
     setVolumeControlStream(AudioManager.STREAM_MUSIC)
@@ -36,26 +38,32 @@ class Splash extends Activity {
   }
 
   private def highScore: Int = {
-    val oldScore: Option[Int] = {
-      try {
-        val fis = new FileInputStream(FilePath)
-        val ois = new ObjectInputStream(fis)
-        val score = ois.readInt
-        fis.close
-        Some(score)
-      } catch {
-        case e: FileNotFoundException => e.printStackTrace; None
-        case e: StreamCorruptedException => e.printStackTrace; None
-        case e: IOException => e.printStackTrace; None
+    if (!saveFileExists)
+      currentScore
+    else {
+      val oldScore: Option[Int] = {
+        try {
+          val fis = new FileInputStream(FilePath)
+          val ois = new ObjectInputStream(fis)
+          val score = ois.readInt
+          fis.close
+          Some(score)
+        } catch {
+          case e: FileNotFoundException =>
+            e.printStackTrace; None
+          case e: StreamCorruptedException =>
+            e.printStackTrace; None
+          case e: IOException => e.printStackTrace; None
+        }
       }
-    }
-    
-    oldScore match {
-      case Some(oldScore) => {
-        if (oldScore > currentScore) oldScore
-    	else currentScore
+
+      oldScore match {
+        case Some(oldScore) => {
+          if (oldScore > currentScore) oldScore
+          else currentScore
+        }
+        case None => currentScore
       }
-      case None => currentScore
     }
   }
 
@@ -71,9 +79,13 @@ class Splash extends Activity {
   }
 
   def contGame(view: View): Unit = {
-    intent.putExtra(NewGame, 0)
-    intent.putExtra(SoundOnOff, currentSound)
-    startActivity(intent)
+    if (!saveFileExists) {
+      newGame(view)
+    } else {
+      intent.putExtra(NewGame, 0)
+      intent.putExtra(SoundOnOff, currentSound)
+      startActivity(intent)
+    }
   }
 
   private def savedSound: Boolean = {
@@ -99,11 +111,12 @@ class Splash extends Activity {
 
   override protected def onResume: Unit = {
     super.onResume
+    saveFileExists = (new File(FilePath)).exists
     val soundButton = (findViewById(R.id.soundToggleButton)).asInstanceOf[ToggleButton]
     soundButton.setChecked(savedSound)
     showHighScore()
   }
-  
+
   override protected def onPause: Unit = {
     super.onPause
     val soundSettings = getSharedPreferences(SoundPrefs, 0)
@@ -115,5 +128,4 @@ class Splash extends Activity {
     soundEditor.commit()
     scoreEditor.commit()
   }
-  
 }

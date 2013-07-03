@@ -135,15 +135,15 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
       && ballRect.right <= mPaddle.right + (radius * 2)
       && ballRect.bottom >= mPaddle.top - (radius * 2)
       && ballRect.top < mPaddle.bottom) {
-      paddleCollision = true
-
+      
       if (soundOn && velocityY > 0) {
         soundPool.play(paddleSoundId, 1, 1, 1, 0, 1)
-      }
+      }      
+      paddleCollision = true
     } else
       paddleCollision = false
-
-    return paddleCollision
+      
+    paddleCollision
   }
 
   def checkBlocksCollision(blocks: ArrayBuffer[Block]): Int = {
