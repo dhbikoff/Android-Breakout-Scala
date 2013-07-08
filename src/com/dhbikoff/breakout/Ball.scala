@@ -16,11 +16,8 @@ import android.media.SoundPool
 class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape) {
   this.getPaint.setColor(Color.CYAN)
   val soundOn = sound
-  val soundPool = new SoundPool(2, AudioManager.STREAM_MUSIC, 0)
-  val blockSoundId = soundPool.load(context, R.raw.block, 0)
-  val paddleSoundId = soundPool.load(context, R.raw.paddle, 0)
-  val bottomSoundId = soundPool.load(context, R.raw.bottom, 0)
-
+  val soundEffects = new SoundEffects(context)
+  
   // ball dimensions
   var left = 0
   var right = 0
@@ -109,7 +106,7 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
     } else if (this.getBounds.top > ScreenHeight) {
       bottomHit = 1 // lose a turn
       if (soundOn) {
-        soundPool.play(bottomSoundId, 1, 1, 1, 0, 1)
+        soundEffects.play("bottom")
       }
       try {
         Thread.sleep(ResetBallTimer)
@@ -137,7 +134,7 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
       && ballRect.top < mPaddle.bottom) {
       
       if (soundOn && velocityY > 0) {
-        soundPool.play(paddleSoundId, 1, 1, 1, 0, 1)
+        soundEffects.play("paddle")
       }      
       paddleCollision = true
     } else
@@ -198,7 +195,7 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
     }
 
     if (soundOn && blockCollision) {
-      soundPool.play(blockSoundId, 1, 1, 1, 0, 1)
+      soundEffects.play("block")
     }
     return points
   }
@@ -213,5 +210,5 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
   }
 
   def getVelocityY = velocityY
-  def close = soundPool.release
+  def close = soundEffects.close()
 }
