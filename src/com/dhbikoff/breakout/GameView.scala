@@ -8,7 +8,7 @@ import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.io.StreamCorruptedException
 
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable
 
 import android.content.Context
 import android.graphics.Canvas
@@ -22,7 +22,7 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
 
   val ball = new Ball(context, sound)
   val paddle = new Paddle
-  val blocksList = new ArrayBuffer[Block]
+  val blocksList = new mutable.ArrayBuffer[Block]
   val holder = getHolder
   val score = "SCORE = "
   val PlayerTurnsNum = 3
@@ -176,7 +176,7 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
       val ois = new ObjectInputStream(fis)
       points = ois.readInt()
       playerTurns = ois.readInt()
-      val arr = (ois.readObject).asInstanceOf[ArrayBuffer[Array[Int]]]
+      val arr = (ois.readObject).asInstanceOf[mutable.ArrayBuffer[Array[Int]]]
       restoreBlocks(arr)
       ois.close()
       fis.close()
@@ -188,7 +188,7 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
     }
   }
 
-  private def restoreBlocks(arr: ArrayBuffer[Array[Int]]) {
+  private def restoreBlocks(arr: mutable.ArrayBuffer[Array[Int]]) {
     arr foreach { blockArr: Array[Int] =>
       val rect = new Rect(blockArr(0), blockArr(1), blockArr(2), blockArr(3))
       val block = new Block(rect, blockArr(4))
@@ -224,7 +224,7 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
   }
 
   def saveGameData {
-    val arr = new ArrayBuffer[Array[Int]]
+    val arr = new mutable.ArrayBuffer[Array[Int]]
     for (i <- 0 until blocksList.size) {
       arr.append(blocksList(i).toIntArray)
     }

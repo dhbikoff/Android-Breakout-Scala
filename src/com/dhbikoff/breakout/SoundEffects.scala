@@ -14,7 +14,7 @@ class SoundEffects(context: Context) {
     case "paddle" => soundPool.play(paddleSoundId, 1, 1, 1, 0, 1)
     case "bottom" => soundPool.play(bottomSoundId, 1, 1, 1, 0, 1)
     case "block" => soundPool.play(blockSoundId, 1, 1, 1, 0, 1)
-    case _ => throw new IllegalArgumentException(name + " event not found")
+    case _ => throw new IllegalArgumentException(name + " sound not found")
   }
   
   def close() = soundPool.release()

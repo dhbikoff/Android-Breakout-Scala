@@ -2,7 +2,7 @@ package com.dhbikoff.breakout
 
 import java.util.Random
 
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable
 
 import android.content.Context
 import android.graphics.Canvas
@@ -143,7 +143,7 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
     paddleCollision
   }
 
-  def checkBlocksCollision(blocks: ArrayBuffer[Block]): Int = {
+  def checkBlocksCollision(blocks: mutable.ArrayBuffer[Block]): Int = {
     var points = 0
     var blockListLength = blocks.size
     ballRect = this.getBounds()
