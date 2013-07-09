@@ -2,7 +2,7 @@ package com.dhbikoff.breakout
 
 import java.util.Random
 
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable
 
 import android.content.Context
 import android.graphics.Canvas
@@ -10,8 +10,6 @@ import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
-import android.media.AudioManager
-import android.media.SoundPool
 
 class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape) {
   this.getPaint.setColor(Color.CYAN)
@@ -48,8 +46,8 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
     ScreenWidth = width
     ScreenHeight = height
     radius = ScreenWidth / 72
-    velocityX = radius
-    velocityY = radius * 2
+    velocityX = (radius / 2)// + (ScreenWidth / 1000)
+    velocityY = radius + (ScreenHeight / 500)//* 2
 
     // ball coordinates
     left = (ScreenWidth / 2) - radius
@@ -81,13 +79,13 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
       val paddleSplit = (mPaddle.right - mPaddle.left) / 4
       val ballCenter = ballRect.centerX
       if (ballCenter < mPaddle.left + paddleSplit) {
-        velocityX = -(radius * 3)
+        velocityX = -radius
       } else if (ballCenter < mPaddle.left + (paddleSplit * 2)) {
-        velocityX = -(radius * 2)
+        velocityX = -(radius/2)
       } else if (ballCenter < mPaddle.centerX + paddleSplit) {
-        velocityX = radius * 2
+        velocityX = radius / 2
       } else {
-        velocityX = radius * 3
+        velocityX = radius
       }
       velocityY = -velocityY
     }
@@ -143,7 +141,7 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
     paddleCollision
   }
 
-  def checkBlocksCollision(blocks: ArrayBuffer[Block]): Int = {
+  def checkBlocksCollision(blocks: mutable.ArrayBuffer[Block]): Int = {
     var points = 0
     var blockListLength = blocks.size
     ballRect = this.getBounds()
