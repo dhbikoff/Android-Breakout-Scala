@@ -15,6 +15,7 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
   this.getPaint.setColor(Color.CYAN)
   val soundOn = sound
   val soundEffects = new SoundEffects(context)
+  val rnd = new Random
   
   // ball dimensions
   var left = 0
@@ -39,7 +40,6 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
   var ballRect: Rect = null
 
   def initCoords(width: Int, height: Int) {
-    val rnd = new Random
     paddleCollision = false
     blockCollision = false
 

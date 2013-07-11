@@ -21,3 +21,4 @@ class Block(rect: Rect, colorNum: Int) extends ShapeDrawable(new RectShape) {
       getBounds.right, getBounds.bottom, blockColor)
       
 }
+

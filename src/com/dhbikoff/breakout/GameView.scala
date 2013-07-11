@@ -125,10 +125,7 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
   }
 
   private def gameOver(canvas: Canvas, state: State): State = {
-    val gameOverPaint = new Paint
-    gameOverPaint.setTextAlign(Paint.Align.CENTER)
-    gameOverPaint.setColor(Color.RED)
-    gameOverPaint.setTextSize(45)
+    val gameOverPaint = paint(Color.RED, 45, Paint.Align.CENTER)
     canvas.drawText("GAME OVER!!!", canvas.getWidth / 2,
       (canvas.getHeight / 2) - (objs.ball.getBounds.height), gameOverPaint)
 
@@ -157,10 +154,7 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
   }
 
   private def showGetReady(canvas: Canvas, ball: Ball, state: State): State = {
-    val getReadyPaint = new Paint
-    getReadyPaint.setTextAlign(Paint.Align.CENTER)
-    getReadyPaint.setColor(Color.WHITE)
-    getReadyPaint.setTextSize(45)
+    val getReadyPaint = paint(Color.WHITE, 45, Paint.Align.CENTER)
     canvas.drawText(GetReady, canvas.getWidth / 2,
       (canvas.getHeight / 2) - (ball.getBounds.height), getReadyPaint)
 
@@ -174,6 +168,7 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
   }
 
   private def resetBlocks(canvas: Canvas) = {
+    objs.blocksList.clear()
     val blockHeight = canvas.getWidth / 36
     val spacing = canvas.getWidth / 144
     val topOffset = canvas.getHeight / 10
