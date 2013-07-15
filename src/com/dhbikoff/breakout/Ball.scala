@@ -33,9 +33,9 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
   
   var velocityX = 0
   var velocityY = 0
-  resetCoords()
+  reset()
   
-  def resetCoords(): Unit = {
+  def reset(): Unit = {
     // ball speed
     velocityX = (radius / 2)
     velocityY = radius + (ScreenHeight / 500)
@@ -77,7 +77,7 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
         soundEffects.play("bottom")
       }
       try {
-        resetCoords() // reset ball
+        reset() // reset ball
         Thread.sleep(ResetBallTimer)
       } catch {
         case e: InterruptedException => e.printStackTrace()

@@ -4,64 +4,61 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RectShape
+import android.view.WindowManager
+import android.view.Display
+import android.content.Context
+import android.graphics.Rect
 
-class Paddle extends ShapeDrawable(new RectShape) {
+class Paddle(context: Context) extends ShapeDrawable(new RectShape) {
+  val wm: WindowManager = context.
+    getSystemService(Context.WINDOW_SERVICE).
+    asInstanceOf[WindowManager]
+  val display: Display = wm.getDefaultDisplay
 
-  var screenWidth = 0
-  var screenHeight = 0
-  var paddleWidth = 0
-  var paddleHeight = 0
-  var paddleOffset = 0
-  var paddleMoveOffset = 0
-
-  var left = 0
-  var right = 0
-  var top = 0
-  var bottom = 0
-  
+  val ScreenWidth = display.getWidth
+  val ScreenHeight = display.getHeight
+  val paddleMoveOffset = ScreenWidth / 15
+  val paddleWidth = ScreenWidth / 10
+  val paddleHeight = ScreenWidth / 72
+  val paddleOffset = ScreenHeight / 6
   this.getPaint.setColor(Color.WHITE)
+  reset()
 
   def drawPaddle(canvas: Canvas): Unit = {
-    this.setBounds(left, top, right, bottom)
     this.draw(canvas)
   }
 
-  def initCoords(width: Int, height: Int): Unit = {
-    screenHeight = height
-    screenWidth = width
-    paddleMoveOffset = screenWidth / 15
-
-    paddleWidth = screenWidth / 10
-    paddleHeight = screenWidth / 72
-    paddleOffset = screenHeight / 6
-
-    left = (screenWidth / 2) - paddleWidth
-    right = (screenWidth / 2) + paddleWidth
-    top = (screenHeight - paddleOffset) - paddleHeight
-    bottom = (screenHeight - paddleOffset) + paddleHeight
-
+  def reset(): Unit = {
+    val left = (ScreenWidth / 2) - paddleWidth
+    val right = (ScreenWidth / 2) + paddleWidth
+    val top = (ScreenHeight - paddleOffset) - paddleHeight
+    val bottom = (ScreenHeight - paddleOffset) + paddleHeight
+    this.setBounds(left, top, right, bottom)
   }
 
   def movePaddle(x: Int): Unit = {
-    if (x >= left && x <= right) {
-      left = x - paddleWidth
-      right = x + paddleWidth
-    } else if (x > right) {
-      left += paddleMoveOffset
-      right += paddleMoveOffset
-    } else if (x < left) {
-      left -= paddleMoveOffset
-      right -= paddleMoveOffset
-    }
+    val paddleRect = this.getBounds
+    val leftAndRight = checkSideBounds(x, paddleRect)
 
-    if (left < 0) {
-      left = 0
-      right = paddleWidth * 2
+    if (leftAndRight._1 < 0) {
+      this.setBounds(0, paddleRect.top, paddleWidth * 2, paddleRect.bottom)
+    } else if (leftAndRight._2 > ScreenWidth) {
+      this.setBounds(ScreenWidth - (paddleWidth * 2),
+        paddleRect.top, ScreenWidth, paddleRect.bottom)
+    } else {
+      this.setBounds(leftAndRight._1, paddleRect.top, leftAndRight._2, paddleRect.bottom)
     }
+  }
 
-    if (right > screenWidth) {
-      right = screenWidth
-      left = screenWidth - (paddleWidth * 2)
+  private def checkSideBounds(x: Int, paddleRect: Rect): (Int, Int) = {
+    if (x >= paddleRect.left && x <= paddleRect.right) {
+      (x - paddleWidth, x + paddleWidth)
+    } else if (x > paddleRect.right) {
+      (paddleRect.left + paddleMoveOffset, paddleRect.right + paddleMoveOffset)
+    } else if (x < paddleRect.left) {
+      (paddleRect.left - paddleMoveOffset, paddleRect.right - paddleMoveOffset)
+    } else {
+      (paddleRect.left, paddleRect.right)
     }
   }
 }

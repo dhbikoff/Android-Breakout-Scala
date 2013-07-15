@@ -20,7 +20,7 @@ import android.view.MotionEvent
 import android.view.SurfaceView
 
 class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends SurfaceView(context) with Runnable {
-  val objs = Objs(getContext, sound)
+  val gamePieces = GamePieces(getContext, sound)
   val score = "SCORE = "
   val PlayerTurnsNum = 3
   val GetReady = "GET READY..."
@@ -40,9 +40,9 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
   var eventX = 0.0
   var points = 0
 
-  case class Objs(context: Context, sound: Boolean) {
+  case class GamePieces(context: Context, sound: Boolean) {
     val ball = new Ball(context, sound)
-    val paddle = new Paddle
+    val paddle = new Paddle(context)
     val blocksList = new mutable.ArrayBuffer[Block]
   }
 
@@ -81,7 +81,7 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
         canvas.drawColor(Color.BLACK)
         state = updateState(state, canvas)
         if (touchEvent)
-          objs.paddle.movePaddle(eventX.asInstanceOf[Int])
+          gamePieces.paddle.movePaddle(eventX.asInstanceOf[Int])
         drawObjects(canvas)
         canvas.drawText(score + points, 0, 25, scorePaint)
         canvas.drawText(PlayerTurnsText + playerTurns, canvas.getWidth, 25, turnsPaint)
@@ -106,28 +106,28 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
         playerTurns += 1
         state.update
       case "GetReadyState" =>
-        showGetReady(canvas, objs.ball, state)
+        showGetReady(canvas, gamePieces.ball, state)
       case "GameOverState" =>
         gameOver(canvas, state)
     }
   }
 
   private def engine(canvas: Canvas, state: State): State = {
-    playerTurns -= objs.ball.setVelocity(objs.paddle)
-    objs.ball.checkPaddleCollision(objs.paddle)
-    points += objs.ball.checkBlocksCollision(objs.blocksList)
+    playerTurns -= gamePieces.ball.setVelocity(gamePieces.paddle)
+    gamePieces.ball.checkPaddleCollision(gamePieces.paddle)
+    points += gamePieces.ball.checkBlocksCollision(gamePieces.blocksList)
 
     if (playerTurns < 0) {
       playerTurns = 0
       State("GameOverState")
-    } else if (objs.blocksList.size == 0) State("NextLevelState")
+    } else if (gamePieces.blocksList.size == 0) State("NextLevelState")
     else state
   }
 
   private def gameOver(canvas: Canvas, state: State): State = {
     val gameOverPaint = paint(Color.RED, 45, Paint.Align.CENTER)
     canvas.drawText("GAME OVER!!!", canvas.getWidth / 2,
-      (canvas.getHeight / 2) - (objs.ball.getBounds.height), gameOverPaint)
+      (canvas.getHeight / 2) - (gamePieces.ball.getBounds.height), gameOverPaint)
 
     if (timer <= 0) {
       timer = StartTimer
@@ -148,9 +148,9 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
   }
 
   private def drawObjects(canvas: Canvas) = {
-    objs.blocksList foreach { x: Block => x.drawBlock(canvas) }
-    objs.paddle.drawPaddle(canvas)
-    objs.ball.drawBall(canvas)
+    gamePieces.blocksList foreach { x: Block => x.drawBlock(canvas) }
+    gamePieces.paddle.drawPaddle(canvas)
+    gamePieces.ball.drawBall(canvas)
   }
 
   private def showGetReady(canvas: Canvas, ball: Ball, state: State): State = {
@@ -168,7 +168,7 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
   }
 
   private def resetBlocks(canvas: Canvas) = {
-    objs.blocksList.clear()
+    gamePieces.blocksList.clear()
     val blockHeight = canvas.getWidth / 36
     val spacing = canvas.getWidth / 144
     val topOffset = canvas.getHeight / 10
@@ -190,15 +190,15 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
           case _ => Color.LTGRAY
         }
         val block = new Block(r, color)
-        objs.blocksList.append(block)
+        gamePieces.blocksList.append(block)
       }
     }
   }
 
   private def resetBallAndPaddle(canvas: Canvas, state: State): State = {
     touchEvent = false // reset paddle location
-    objs.ball.resetCoords()
-    objs.paddle.initCoords(canvas.getWidth, canvas.getHeight)
+    gamePieces.ball.reset()
+    gamePieces.paddle.reset()
     state.update
   }
 
@@ -227,14 +227,14 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
     arr foreach { blockArr: Array[Int] =>
       val rect = new Rect(blockArr(0), blockArr(1), blockArr(2), blockArr(3))
       val block = new Block(rect, blockArr(4))
-      objs.blocksList.append(block)
+      gamePieces.blocksList.append(block)
     }
   }
 
   private def saveGameData() = {
     val arr = new mutable.ArrayBuffer[Array[Int]]
-    for (i <- 0 until objs.blocksList.size) {
-      arr.append(objs.blocksList(i).toIntArray)
+    for (i <- 0 until gamePieces.blocksList.size) {
+      arr.append(gamePieces.blocksList(i).toIntArray)
     }
     try {
       val fos = new FileOutputStream(FilePath)
@@ -259,7 +259,7 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
       case e: InterruptedException => e.printStackTrace
     }
     gameThread = null
-    objs.ball.close
+    gamePieces.ball.close
   }
 
   def resume(): Unit = {
