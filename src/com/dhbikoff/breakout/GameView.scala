@@ -113,7 +113,7 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
   }
 
   private def engine(canvas: Canvas, state: State): State = {
-    playerTurns -= objs.ball.setVelocity
+    playerTurns -= objs.ball.setVelocity(objs.paddle)
     objs.ball.checkPaddleCollision(objs.paddle)
     points += objs.ball.checkBlocksCollision(objs.blocksList)
 
@@ -197,7 +197,7 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
 
   private def resetBallAndPaddle(canvas: Canvas, state: State): State = {
     touchEvent = false // reset paddle location
-    objs.ball.initCoords(canvas.getWidth, canvas.getHeight)
+    objs.ball.resetCoords()
     objs.paddle.initCoords(canvas.getWidth, canvas.getHeight)
     state.update
   }
