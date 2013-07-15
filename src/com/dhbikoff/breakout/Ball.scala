@@ -132,22 +132,13 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
       if (Rect.intersects(ballRect, blockRect)) {
         blocks.remove(i)
         velocityY = -velocityY
-        points += getPoints(color)
+        points += GetPoints(color)
         if (soundOn) {
           soundEffects.play("block")
         }
       }
     }
     return points
-  }
-  
-  private def getPoints(color: Int): Int = color match {
-    case Color.LTGRAY => 100
-    case Color.MAGENTA => 200
-    case Color.GREEN => 300
-    case Color.YELLOW => 400
-    case Color.RED => 500
-    case _ => 0
   }
 
   def close = soundEffects.close()
