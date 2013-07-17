@@ -70,11 +70,13 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
       finishDelta = Platform.currentTime
       val diff = FrameRate - (finishDelta - startDelta)
       val delta = if (diff >= 0) diff else FrameRate
+      
       try {
         Thread.sleep(delta)
       } catch {
         case e: InterruptedException => e.printStackTrace
       }
+      
       startDelta = Platform.currentTime
       val holder = getHolder
       if (holder.getSurface.isValid) {
@@ -153,7 +155,7 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
   }
 
   private def drawObjects(canvas: Canvas) = {
-    gamePieces.blocksList foreach { x: Block => x.drawBlock(canvas) }
+    gamePieces.blocksList foreach { _.drawBlock(canvas) }
     gamePieces.paddle.drawPaddle(canvas)
     gamePieces.ball.drawBall(canvas)
   }
