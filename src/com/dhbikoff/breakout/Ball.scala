@@ -20,21 +20,20 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
     getSystemService(Context.WINDOW_SERVICE).
     asInstanceOf[WindowManager]
   val display: Display = wm.getDefaultDisplay
+  
   val ScreenWidth = display.getWidth
   val ScreenHeight = display.getHeight
-  
   val radius = ScreenWidth / 72
   val soundOn = sound
   val soundEffects = new SoundEffects(context)
   val rnd = new Random
-  
   // timer when ball hits screen bottom
   val ResetBallTimer = 1000
-  
+
   var velocityX = 0
   var velocityY = 0
   reset()
-  
+
   def reset(): Unit = {
     // ball speed
     velocityX = (radius / 2)
@@ -56,8 +55,7 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
     this.draw(canvas)
   }
 
-  def setVelocity(paddle: Paddle): Int = {
-    var bottomHit = 0
+  def setVelocity(paddle: Paddle): Boolean = {
     val ballRect = this.getBounds
 
     // side walls collision
@@ -69,12 +67,18 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
     }
 
     // screen top/bottom collisions
-    if (ballRect.top <= 0) {
-      velocityY = -velocityY
-    } else if (ballRect.top > ScreenHeight) {
-      bottomHit = 1 // lose a turn
+    val bottomHit = if (ballRect.top > ScreenHeight) {
+      true
+    } else {
+      if (ballRect.top <= 0) {
+        velocityY = -velocityY
+      }
+      false
+    }
+     
+    if (bottomHit) {
       if (soundOn) {
-        soundEffects.play("bottom")
+        soundEffects play "bottom"
       }
       try {
         reset() // reset ball
@@ -84,14 +88,13 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
       }
     }
 
-    // move ball
     val left = ballRect.left + velocityX
     val right = ballRect.right + velocityX
     val top = ballRect.top + velocityY
     val bottom = ballRect.bottom + velocityY
     this.setBounds(left, top, right, bottom)
 
-    return bottomHit
+    bottomHit
   }
 
   def checkPaddleCollision(paddle: Paddle): Unit = {
@@ -114,7 +117,7 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
         velocityY = -velocityY
 
         if (soundOn) {
-          soundEffects.play("paddle")
+          soundEffects play "paddle"
         }
       }
     }
@@ -124,21 +127,21 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
     var points = 0
     val blockListLength = blocks.size
     val ballRect = this.getBounds
-    
+
     for (i <- (blockListLength - 1) to 0 by -1) {
       val blockRect = blocks(i).getBounds
       val color = blocks(i).color
-    
+
       if (Rect.intersects(ballRect, blockRect)) {
         blocks.remove(i)
         velocityY = -velocityY
         points += GetPoints(color)
         if (soundOn) {
-          soundEffects.play("block")
+          soundEffects play "block"
         }
       }
     }
-    return points
+    points
   }
 
   def close = soundEffects.close()

@@ -20,7 +20,6 @@ import android.view.MotionEvent
 import android.view.SurfaceView
 
 class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends SurfaceView(context) with Runnable {
-  val gamePieces = GamePieces(getContext, sound)
   val score = "SCORE = "
   val PlayerTurnsNum = 3
   val GetReady = "GET READY..."
@@ -30,7 +29,7 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
   val StartTimer = 60
   val scorePaint = paint(Color.WHITE, 25, Paint.Align.LEFT)
   val turnsPaint = paint(Color.WHITE, 25, Paint.Align.RIGHT)
-  val initGameStateVal = if (newGameFlag == 1) "NewGameState" else "LoadGameState"
+  val initGameState = if (newGameFlag == 1) NewGameState else LoadGameState
 
   var gameThread = new Thread(this)
   var playerTurns = PlayerTurnsNum
@@ -40,30 +39,32 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
   var eventX = 0.0
   var points = 0
 
-  case class GamePieces(context: Context, sound: Boolean) {
+  object gamePieces {
     val ball = new Ball(context, sound)
     val paddle = new Paddle(context)
     val blocksList = new mutable.ArrayBuffer[Block]
   }
 
-  case class State(curr: String) {
-    val current = curr
-    def update = current match {
-      case "GetReadyState" =>
-        State("RunningState")
-      case "NextLevelState" | "GameOverState" =>
-        State("NewGameState")
-      case "NewGameState" | "LoadGameState" =>
-        State("GetReadyState")
-      case _ =>
-        throw new IllegalArgumentException("Next State Unknown!")
+  sealed abstract class State {
+    def update = this match {
+      case GetReadyState => RunningState
+      case NextLevelState | GameOverState => NewGameState
+      case NewGameState | LoadGameState => GetReadyState
+      case RunningState => NewGameState
     }
   }
+  
+  case object GetReadyState extends State
+  case object RunningState extends State
+  case object NextLevelState extends State
+  case object GameOverState extends State
+  case object NewGameState extends State
+  case object LoadGameState extends State
 
   def run(): Unit = {
     var startDelta: Long = 0
     var finishDelta: Long = 0
-    var state = State(initGameStateVal)
+    var state: State = initGameState
 
     while (running) {
       finishDelta = Platform.currentTime
@@ -91,36 +92,39 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
   }
 
   private def updateState(state: State, canvas: Canvas): State = {
-    state.current match {
-      case "NewGameState" =>
+    state match {
+      case NewGameState =>
         resetBlocks(canvas)
         resetBallAndPaddle(canvas, state)
-      case "LoadGameState" =>
+      case LoadGameState =>
         val data = restoreGameData
         points = data._1
         playerTurns = data._2
         resetBallAndPaddle(canvas, state)
-      case "RunningState" =>
+      case RunningState =>
         engine(canvas, state)
-      case "NextLevelState" =>
+      case NextLevelState =>
         playerTurns += 1
         state.update
-      case "GetReadyState" =>
+      case GetReadyState =>
         showGetReady(canvas, gamePieces.ball, state)
-      case "GameOverState" =>
+      case GameOverState =>
         gameOver(canvas, state)
     }
   }
 
-  private def engine(canvas: Canvas, state: State): State = {
-    playerTurns -= gamePieces.ball.setVelocity(gamePieces.paddle)
-    gamePieces.ball.checkPaddleCollision(gamePieces.paddle)
+  private def engine(canvas: Canvas, state: State): State = {    
+    gamePieces.ball.checkPaddleCollision(gamePieces.paddle)    
     points += gamePieces.ball.checkBlocksCollision(gamePieces.blocksList)
-
+    
+    val lostTurn = gamePieces.ball.setVelocity(gamePieces.paddle) 
+    
+    if (lostTurn) playerTurns -= 1 
+  
     if (playerTurns < 0) {
       playerTurns = 0
-      State("GameOverState")
-    } else if (gamePieces.blocksList.size == 0) State("NextLevelState")
+      GameOverState
+    } else if (gamePieces.blocksList.size == 0) NextLevelState
     else state
   }
 
@@ -139,6 +143,7 @@ class GameView(context: Context, newGameFlag: Int, sound: Boolean) extends Surfa
       state
     }
   }
+  
   private def paint(color: Int, pt: Int, align: Paint.Align): Paint = {
     val p = new Paint
     p.setColor(color)
