@@ -1,8 +1,6 @@
 Android Breakout In Scala
 =========================
 
-This is a quick and fugly port of my Breakout for Android app. The next step will be refactoring the code to use Scala best practices and collections.
-
 A note on compiling:
 
 After much fighting with different build configs, this is my suggested dev environment for Android and Scala.
