@@ -59,9 +59,9 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
     val ballRect = this.getBounds
 
     // side walls collision
-    if (this.getBounds.right >= ScreenWidth) {
+    if (ballRect.right >= ScreenWidth) {
       velocityX = -velocityX
-    } else if (this.getBounds.left <= 0) {
+    } else if (ballRect.left <= 0) {
       this.setBounds(0, ballRect.top, radius * 2, ballRect.bottom)
       velocityX = -velocityX
     }
@@ -78,7 +78,7 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
      
     if (bottomHit) {
       if (soundOn) {
-        soundEffects play "bottom"
+        soundEffects.playBottom()
       }
       try {
         reset() // reset ball
@@ -117,7 +117,7 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
         velocityY = -velocityY
 
         if (soundOn) {
-          soundEffects play "paddle"
+          soundEffects.playPaddle()
         }
       }
     }
@@ -137,7 +137,7 @@ class Ball(context: Context, sound: Boolean) extends ShapeDrawable(new OvalShape
         velocityY = -velocityY
         points += GetPoints(color)
         if (soundOn) {
-          soundEffects play "block"
+          soundEffects.playBlock
         }
       }
     }
