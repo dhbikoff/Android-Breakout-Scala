@@ -10,3 +10,5 @@ After much fighting with different build configs, this is my suggested dev envir
 - Import the Android plugin to Scala IDE http://developer.android.com/sdk/installing/installing-adt.html
 - To add Scala to your Android project -> http://scala-ide.org/docs/tutorials/androiddevelopment/index.html
 - Avoid using Android's version of Eclipse that comes bundled with the SDK
+
+!(menu1.png) !(ready1.png)
