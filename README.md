@@ -11,4 +11,4 @@ After much fighting with different build configs, this is my suggested dev envir
 - To add Scala to your Android project -> http://scala-ide.org/docs/tutorials/androiddevelopment/index.html
 - Avoid using Android's version of Eclipse that comes bundled with the SDK
 
-![Menu](https://github.com/dhbikoff/AndroidBreakoutScala/blob/master/screenshots/menu1.png) ![Get Ready](https://github.com/dhbikoff/AndroidBreakoutScala/blob/master/screenshots/ready1.png)
+![Menu](https://raw.github.com/dhbikoff/AndroidBreakoutScala/master/screenshots/menu1.png) ![Get Ready](https://raw.github.com/dhbikoff/AndroidBreakoutScala/master/screenshots/ready1.png)
